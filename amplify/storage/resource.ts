@@ -1,10 +1,10 @@
 import { defineStorage } from '@aws-amplify/backend';
 
 export const storage = defineStorage({
-  name: 'myStorageBucket',
+  name: 'ssm-media-test-bucket',
   isDefault: true,
    access: (allow) => ({
-    'public/*': [
+    'App1/*': [
         allow.guest.to(['read', 'write']),
         allow.authenticated.to(['read', 'write', 'delete']),
     ],

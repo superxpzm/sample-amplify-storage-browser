@@ -15,7 +15,7 @@ const backend = defineBackend({
  * For more information on authorization access, visit: https://docs.amplify.aws/react/build-a-backend/storage/authorization/#available-actions
  *
  * Requirements for this sample:
- * 1. An S3 bucket named 'my-existing-bucket' must exist in your AWS account.
+ * 1. An S3 bucket named 'my-existding-bucket' must exist in your AWS account.
  * 2. The bucket should contain two folders:
  *    - 'public/' - Accessible by all authenticated and unauthenticated users.
  *    - 'admin/' - Accessible only by users in the admin group and authenticated users.

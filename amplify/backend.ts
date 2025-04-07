@@ -22,25 +22,21 @@ const backend = defineBackend({
  *
  * Note: Ensure the bucket exists before deploying this code, as it only sets up IAM policies and does not create the S3 bucket.
  */
-const customBucketName = "my-existing-bucket";
+const customBucketName = "ssm-test-bucket-src";
 
 backend.addOutput({
   version: "1.3",
   storage: {
-    aws_region: "us-east-1",
+    aws_region: "ap-northeast-2",
     bucket_name: customBucketName,
     buckets: [
       {
         name: customBucketName,
         bucket_name: customBucketName,
-        aws_region: "us-east-1",
+        aws_region: "ap-northeast-2",
         //@ts-expect-error amplify backend type issue https://github.com/aws-amplify/amplify-backend/issues/2569
         paths: {
-          "public/*": {
-            guest: ["get", "list"],
-            authenticated: ["get", "list", "write", "delete"],
-          },
-          "admin/*": {
+          "*": {
             groupsadmin: ["get", "list", "write", "delete"],
             authenticated: ["get", "list", "write", "delete"],
           },
@@ -59,7 +55,7 @@ const unauthPolicy = new Policy(backend.stack, "customBucketUnauthPolicy", {
     new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ["s3:GetObject"],
-      resources: [`arn:aws:s3:::${customBucketName}/public/*`],
+      resources: [`arn:aws:s3:::${customBucketName}/*`],
     }),
     new PolicyStatement({
       effect: Effect.ALLOW,
@@ -67,7 +63,7 @@ const unauthPolicy = new Policy(backend.stack, "customBucketUnauthPolicy", {
       resources: [`arn:aws:s3:::${customBucketName}`],
       conditions: {
         StringLike: {
-          "s3:prefix": ["public/*", "public/"],
+          "s3:prefix": ["*"],
         },
       },
     }),
@@ -84,8 +80,7 @@ const authPolicy = new Policy(backend.stack, "customBucketAuthPolicy", {
       effect: Effect.ALLOW,
       actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
       resources: [
-        `arn:aws:s3:::${customBucketName}/public/*`,
-        `arn:aws:s3:::${customBucketName}/admin/*`,
+        `arn:aws:s3:::${customBucketName}/*`
       ],
     }),
     new PolicyStatement({
@@ -97,7 +92,7 @@ const authPolicy = new Policy(backend.stack, "customBucketAuthPolicy", {
       ],
       conditions: {
         StringLike: {
-          "s3:prefix": ["public/*", "public/", "admin/*", "admin/"],
+          "s3:prefix": ["*"],
         },
       },
     }),
@@ -107,7 +102,7 @@ const authPolicy = new Policy(backend.stack, "customBucketAuthPolicy", {
 /**
  * Define an inline policy to attach to Admin user role
  * This policy defines how authenticated users can access your existing bucket
- */
+
 const adminPolicy = new Policy(backend.stack, "customBucketAdminPolicy", {
   statements: [
     new PolicyStatement({
@@ -130,7 +125,7 @@ const adminPolicy = new Policy(backend.stack, "customBucketAdminPolicy", {
     }),
   ],
 });
-
+ */
 // Add the policies to the unauthenticated user role
 backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(
   unauthPolicy
@@ -140,4 +135,4 @@ backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(authPolicy);
 
 // Add the policies to the admin user role
-backend.auth.resources.groups["admin"].role.attachInlinePolicy(adminPolicy);
+//backend.auth.resources.groups["admin"].role.attachInlinePolicy(adminPolicy);
